@@ -1,4 +1,4 @@
-name: Build Kivy APK
+name: Build SmartCalc APK
 
 on:
   push:
@@ -9,10 +9,31 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout repo
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Cache Python packages
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # Step 3: Cache Buildozer/.buildozer
+      - name: Cache Buildozer
+        uses: actions/cache@v3
+        with:
+          path: .buildozer
+          key: ${{ runner.os }}-buildozer-${{ hashFiles('**/buildozer.spec') }}
+          restore-keys: |
+            ${{ runner.os }}-buildozer-
+
+      # Step 4: Install dependencies & accept licenses
       - name: Install dependencies
         run: |
           sudo apt update
@@ -22,13 +43,14 @@ jobs:
           buildozer android sdk
           yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses
 
+      # Step 5: Build APK
       - name: Build APK
         run: |
           buildozer android debug
 
+      # Step 6: Upload APK artifact
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SmartCalc
+          name: SmartCalc-APK
           path: bin/*.apk
-
