@@ -58,10 +58,10 @@ jobs:
           ln -s $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin $HOME/.buildozer/android/platform/android-sdk/tools/bin
 
       # Step 6: Accept licenses and install Build-Tools
-      - name: Install Android Build-Tools
+      - name: Accept licenses and install Build-Tools
         run: |
-          yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses
-          $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager "platform-tools" "build-tools;36.0.0" "platforms;android-36"
+          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;36.0.0" "platforms;android-36"
 
       # Step 7: Build APK
       - name: Build APK
