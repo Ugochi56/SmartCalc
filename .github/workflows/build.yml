@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repo
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Cache Python packages
+      # Step 2: Cache pip packages
       - name: Cache pip
         uses: actions/cache@v3
         with:
@@ -24,7 +24,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # Step 3: Cache Buildozer/.buildozer
+      # Step 3: Cache Buildozer folder
       - name: Cache Buildozer
         uses: actions/cache@v3
         with:
@@ -33,22 +33,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildozer-
 
-      # Step 4: Install dependencies & accept licenses
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y python3-pip python3-setuptools python3-wheel git zip unzip openjdk-17-jdk wget
           pip install --upgrade pip
           pip install buildozer cython virtualenv
-          buildozer android sdk
-          yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses
 
-      # Step 5: Build APK
+      # Step 5: Accept Android SDK licenses (after Buildozer installs SDK)
+      - name: Accept Android SDK licenses
+        run: |
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk
+          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+      # Step 6: Build APK
       - name: Build APK
         run: |
           buildozer android debug
 
-      # Step 6: Upload APK artifact
+      # Step 7: Upload APK artifact
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
