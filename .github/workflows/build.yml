@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout code
+      # Step 1: Checkout repo
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -33,26 +33,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildozer-
 
-      # Step 4: Install dependencies
-      - name: Install dependencies
+      # Step 4: Install system dependencies
+      - name: Install system dependencies
         run: |
           sudo apt update
           sudo apt install -y python3-pip python3-setuptools python3-wheel git zip unzip openjdk-17-jdk wget
           pip install --upgrade pip
           pip install buildozer cython virtualenv
 
-      # Step 5: Accept Android SDK licenses (after Buildozer installs SDK)
-      - name: Accept Android SDK licenses
-        run: |
-          mkdir -p $HOME/.buildozer/android/platform/android-sdk
-          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
-      # Step 6: Build APK
+      # Step 5: Build APK (Buildozer handles SDK/NDK & licenses)
       - name: Build APK
         run: |
           buildozer android debug
 
-      # Step 7: Upload APK artifact
+      # Step 6: Upload APK artifact
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
