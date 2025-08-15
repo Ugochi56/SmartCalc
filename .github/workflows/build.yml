@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -17,9 +16,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y python3-pip python3-setuptools python3-wheel git zip unzip openjdk-17-jdk
+          sudo apt install -y python3-pip python3-setuptools python3-wheel git zip unzip openjdk-17-jdk wget
           pip install --upgrade pip
           pip install buildozer cython virtualenv
+          buildozer android sdk
+          yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses
 
       - name: Build APK
         run: |
